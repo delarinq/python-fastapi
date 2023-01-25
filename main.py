@@ -1,6 +1,8 @@
-from fastapi import FastAPI, File, UploadFile, Body, HTTPException
+from fastapi import FastAPI, File, UploadFile, Body, HTTPException, Query
 import itertools, os
 import pandas as pd
+import os.path
+from fastapi.responses import FileResponse
 
 os.environ["DATA_DIR"] = 'D:\\Git\\reps\\test-rep\\data'
 app = FastAPI()
@@ -48,7 +50,7 @@ async def task_2_1(file_list: list[UploadFile] = File()):
                     json_csv = open('D:/Git/reps/test-rep/data/temp.csv', 'r')
                     contents = json_csv.read()
                     json_csv.close()
-                    
+
                     file_name = open('D:/Git/reps/test-rep/data/file_name.csv', 'w')
                     file_name.write(contents)
                     file_name.close()
@@ -67,8 +69,11 @@ async def task_2_1(file_list: list[UploadFile] = File()):
                     output.to_csv('D:/Git/reps/test-rep/data/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")
             return "success"
 
-
-
-"""if __name__ == '__main__':
-    uvicorn.run(app,host='0.0.0.0', port=8000)"""
-#дебаг
+@app.post("/load/")
+async def task_2_2(find_filename: str = Query()):
+    files = []
+    path = f'D:/Git/reps/test-rep/data/{find_filename}'
+    if os.path.isfile(path):
+        return FileResponse(path)
+    else:
+        raise HTTPException(status_code=404, detail=f"file {find_filename} is not uploaded")
