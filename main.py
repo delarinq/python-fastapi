@@ -67,8 +67,8 @@ async def task_2_1(file_list: list[UploadFile] = File()):
                     csv_pd = pd.read_csv(f'{DATA_DIR}/file_name.csv', header=0, sep = ";", encoding='utf-8')
 
                     output = pd.merge(json_pd, csv_pd, how="outer", sort=True)
-                    output.to_csv(f'{DATA_DIR}/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")
-            return "success"
+                    output.to_csv(f'{DATA_DIR}/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")          
+    return "success"
 
 @app.post("/load/")
 async def task_2_2(find_filename: str = Query()):
