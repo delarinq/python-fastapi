@@ -4,7 +4,8 @@ import pandas as pd
 import os.path
 from fastapi.responses import FileResponse
 
-os.environ["DATA_DIR"] = 'D:\\Git\\reps\\test-rep\\data'
+os.environ["DATA_DIR"] = 'D:/Git/reps/python-fastapi/data'
+DATA_DIR = os.getenv("DATA_DIR")
 app = FastAPI()
 
 @app.post("/filter/case_sensitive")
@@ -26,53 +27,53 @@ async def task_2_1(file_list: list[UploadFile] = File()):
             raise HTTPException(status_code=415, detail=f"wrong type of the file ({error_files})")
         else:
             if i.content_type == "text/csv":
-                if os.stat('D:/Git/reps/test-rep/data/file_name.csv').st_size == 0:
-                    file_name = open('D:/Git/reps/test-rep/data/file_name.csv', 'wb')
+                if os.stat(f'{DATA_DIR}/file_name.csv').st_size == 0:
+                    file_name = open(f'{DATA_DIR}/file_name.csv', 'wb')
                     contents = await i.read() 
                     file_name.write(contents)
                     file_name.close()
                 else:
-                    file_csv = open(f'D:/Git/reps/test-rep/data/{i.filename}', 'r')
-                    csv_pd1 = pd.read_csv(f'D:/Git/reps/test-rep/data/{i.filename}', header=0, sep = ";", encoding='utf-8')
+                    file_csv = open(f'{DATA_DIR}/{i.filename}', 'r')
+                    csv_pd1 = pd.read_csv(f'{DATA_DIR}/{i.filename}', header=0, sep = ";", encoding='utf-8')
                     file_csv.close()
 
-                    file_name = open('D:/Git/reps/test-rep/data/file_name.csv', 'r')
-                    csv_pd2 = pd.read_csv('D:/Git/reps/test-rep/data/file_name.csv', header=0, sep = ";", encoding='utf-8')
+                    file_name = open(f'{DATA_DIR}/file_name.csv', 'r')
+                    csv_pd2 = pd.read_csv(f'{DATA_DIR}/file_name.csv', header=0, sep = ";", encoding='utf-8')
                     file_name.close()
 
                     outputq = pd.merge(csv_pd1, csv_pd2, how="outer", sort=True)
-                    outputq.to_csv('D:/Git/reps/test-rep/data/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")
+                    outputq.to_csv(f'{DATA_DIR}/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")
             
             if i.content_type == "application/json":
-                if os.stat('D:/Git/reps/test-rep/data/file_name.csv').st_size == 0:
+                if os.stat(f'{DATA_DIR}/file_name.csv').st_size == 0:
                     json_pd = pd.read_json(i.file)
-                    json_pd.to_csv('D:/Git/reps/test-rep/data/temp.csv', encoding='utf-8', index=False, sep=";")
-                    json_csv = open('D:/Git/reps/test-rep/data/temp.csv', 'r')
+                    json_pd.to_csv(f'{DATA_DIR}/temp.csv', encoding='utf-8', index=False, sep=";")
+                    json_csv = open(f'{DATA_DIR}/temp.csv', 'r')
                     contents = json_csv.read()
                     json_csv.close()
 
-                    file_name = open('D:/Git/reps/test-rep/data/file_name.csv', 'w')
+                    file_name = open(f'{DATA_DIR}/file_name.csv', 'w')
                     file_name.write(contents)
                     file_name.close()
                 else:
                     json_pd = pd.read_json(i.file)
-                    json_pd.to_csv('D:/Git/reps/test-rep/data/temp.csv', encoding='utf-8', index=False, sep=";")
+                    json_pd.to_csv(f'{DATA_DIR}/temp.csv', encoding='utf-8', index=False, sep=";")
 
-                    json_file = open('D:/Git/reps/test-rep/data/temp.csv', 'r')
-                    json_pd = pd.read_csv('D:/Git/reps/test-rep/data/temp.csv', header=0, sep = ";", encoding='utf-8')
+                    json_file = open(f'{DATA_DIR}/temp.csv', 'r')
+                    json_pd = pd.read_csv(f'{DATA_DIR}/temp.csv', header=0, sep = ";", encoding='utf-8')
                     json_file.close()
 
-                    file_name = open('D:/Git/reps/test-rep/data/file_name.csv', 'r')
-                    csv_pd = pd.read_csv('D:/Git/reps/test-rep/data/file_name.csv', header=0, sep = ";", encoding='utf-8')
+                    file_name = open(f'{DATA_DIR}/file_name.csv', 'r')
+                    csv_pd = pd.read_csv(f'{DATA_DIR}/file_name.csv', header=0, sep = ";", encoding='utf-8')
 
                     output = pd.merge(json_pd, csv_pd, how="outer", sort=True)
-                    output.to_csv('D:/Git/reps/test-rep/data/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")
+                    output.to_csv(f'{DATA_DIR}/file_name.csv', header = True, encoding='utf-8', index=False, sep=";")
             return "success"
 
 @app.post("/load/")
 async def task_2_2(find_filename: str = Query()):
     files = []
-    path = f'D:/Git/reps/test-rep/data/{find_filename}'
+    path = f'{DATA_DIR}/{find_filename}'
     if os.path.isfile(path):
         return FileResponse(path)
     else:
